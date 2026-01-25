@@ -27,16 +27,10 @@ module nco(clock, frequency, wave_output_sin, wave_output_cos);
 	
 	always @ (posedge clock) begin
 		phase_acc <= phase_acc+frequency;
-	end
-	
-	always @ (posedge clock) begin
 		sin_table_high_tmp<=sin_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
 		cos_table_high_tmp<=cos_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
 		sin_table_low_tmp<=sin_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
 		cos_table_low_tmp<=cos_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
-	end
-	
-	always @ (posedge clock) begin
 		wave_reg_cos<=(cos_table_high_tmp*cos_table_low_tmp-sin_table_high_tmp*sin_table_low_tmp);
 		wave_reg_sin<=(sin_table_high_tmp*cos_table_low_tmp+cos_table_high_tmp*sin_table_low_tmp);
 	end
