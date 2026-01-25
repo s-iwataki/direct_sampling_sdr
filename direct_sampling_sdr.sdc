@@ -1,0 +1,1 @@
+create_clock -period 8.1 [get_ports {clock}]
