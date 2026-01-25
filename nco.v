@@ -22,6 +22,8 @@ module nco(clock, frequency, wave_output_sin, wave_output_cos);
 	reg signed [OUTPUT_BIT_WIDTH-1:0] sin_table_low_tmp;
 	reg signed [OUTPUT_BIT_WIDTH-1:0] cos_table_low_tmp;
 	
+	reg signed [OUTPUT_BIT_WIDTH*2-1:0]chcl_tmp,shsl_tmp,shcl_tmp,chsl_tmp;
+	
 	assign wave_output_sin = wave_reg_sin[OUTPUT_BIT_WIDTH*2-1:OUTPUT_BIT_WIDTH];
 	assign wave_output_cos = wave_reg_cos[OUTPUT_BIT_WIDTH*2-1:OUTPUT_BIT_WIDTH];
 	
@@ -31,8 +33,14 @@ module nco(clock, frequency, wave_output_sin, wave_output_cos);
 		cos_table_high_tmp<=cos_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
 		sin_table_low_tmp<=sin_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
 		cos_table_low_tmp<=cos_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
-		wave_reg_cos<=(cos_table_high_tmp*cos_table_low_tmp-sin_table_high_tmp*sin_table_low_tmp);
-		wave_reg_sin<=(sin_table_high_tmp*cos_table_low_tmp+cos_table_high_tmp*sin_table_low_tmp);
+		chcl_tmp<=cos_table_high_tmp*cos_table_low_tmp;
+		shsl_tmp<=sin_table_high_tmp*sin_table_low_tmp;
+		shcl_tmp<=sin_table_high_tmp*cos_table_low_tmp;
+		chsl_tmp<=cos_table_high_tmp*sin_table_low_tmp;
+		//wave_reg_cos<=(cos_table_high_tmp*cos_table_low_tmp-sin_table_high_tmp*sin_table_low_tmp);
+		//wave_reg_sin<=(sin_table_high_tmp*cos_table_low_tmp+cos_table_high_tmp*sin_table_low_tmp);
+		wave_reg_cos<=(chcl_tmp-shsl_tmp);
+		wave_reg_sin<=(shcl_tmp+chsl_tmp);
 	end
 	
 	/* init sin table contents*/ 
