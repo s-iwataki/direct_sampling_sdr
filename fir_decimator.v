@@ -10,10 +10,11 @@ module fir_decimator(clock,reset_n,signal_in,signal_out,input_sample_clk,decimat
 	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs [0:NMAX_TAPS-1];
 	reg [7:0] tap_address_counter;
 	reg [7:0] sigmem_addr_counter;
+	reg [7:0] sigmem_read_addr;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] fir_accumlator;
 	reg signed [SIGNAL_BITWIDTH-1:0] output_sampler;
 	wire[7:0] signal_mem_read_addr;
-	assign signal_mem_read_addr=sigmem_addr_counter+tap_address_counter;
+	assign signal_mem_read_addr=sigmem_addr_counter-tap_address_counter;
 	assign signal_out=output_sampler;
 	
 	always @(posedge clock) begin
@@ -24,12 +25,13 @@ module fir_decimator(clock,reset_n,signal_in,signal_out,input_sample_clk,decimat
 			output_sampler<=0;
 		end else begin
 			tap_address_counter<=tap_address_counter+1;
+			sigmem_read_addr<=signal_mem_read_addr;
 			if(input_sample_clk) begin
 				sigmem_addr_counter<=sigmem_addr_counter+1;
 				signal_mem[sigmem_addr_counter]<=signal_in;
-				fir_accumlator<= signal_mem[signal_mem_read_addr]*tap_coeffs[tap_address_counter];
+				fir_accumlator<= signal_mem[sigmem_read_addr]*tap_coeffs[tap_address_counter];
 			end else begin
-				fir_accumlator<= signal_mem[signal_mem_read_addr]*tap_coeffs[tap_address_counter]+fir_accumlator;
+				fir_accumlator<= signal_mem[sigmem_read_addr]*tap_coeffs[tap_address_counter]+fir_accumlator;
 			end
 			if(decimation_clk) begin
 				output_sampler<=fir_accumlator[2*SIGNAL_BITWIDTH-1:SIGNAL_BITWIDTH];
