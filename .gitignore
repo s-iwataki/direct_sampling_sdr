@@ -30,3 +30,6 @@
 !*.sdc
 # tcl files:
 !*.tcl
+# readme files:
+!*.txt 
+!*.md
