@@ -17,7 +17,6 @@ module fir_interpolator(clock,reset_n,signal_in,signal_out,fir_update_clk,input_
 	reg fir_update_en_adress_stg,fir_update_en_memout_stg,fir_update_en_mult_stg;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] fir_accumlator;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] mult_result;
-	reg signed [SIGNAL_BITWIDTH-1:0] output_sampler;
 	reg signed [SIGNAL_BITWIDTH-1:0] fir_output;
 	wire[7:0] signal_mem_read_addr;
     wire signed [SIGNAL_BITWIDTH-1:0]fir_in ;
@@ -29,7 +28,6 @@ module fir_interpolator(clock,reset_n,signal_in,signal_out,fir_update_clk,input_
 			tap_address_counter<=0;
 			sigmem_addr_counter<=0;
 			fir_accumlator<=0;
-			output_sampler<=0;
 			fir_update_en_adress_stg<=0;
 			fir_update_en_memout_stg<=0;
 			fir_update_en_mult_stg<=0;

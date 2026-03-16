@@ -27,8 +27,6 @@ module control_registers(
 	cs_n,
 	spi_data_in, 
 	spi_data_en,
-	spi_address_in,
-	spi_address_en,
 	fir_data_out,
 	fir_address_out,
 	tx_fir_i_data_we,
@@ -41,7 +39,7 @@ module control_registers(
 	frequency_data_out);
 	
 	input clock, reset_n,spi_data_en, cs_n;
-	input [7:0] spi_data_in, spi_address_in;
+	input [7:0] spi_data_in;
 	output signed [15:0] fir_data_out;
 	output [7:0] fir_address_out;
 	output [15:0] rx_gain_out;
@@ -138,7 +136,7 @@ module control_registers(
 				end
 				`STATE_WAIT_RESET_OPCODE: begin
 					if(!cs_n && spi_data_en) begin
-						reset_op_code<=spi_data_in[1:0];
+						reset_opcode<=spi_data_in[1:0];
 						state <= `STATE_DO_RESET;
 					end 
 				end

@@ -9,11 +9,11 @@ module i2s_interface (
     output reg i2s_sd_out,
     
     // Control signals
-    output reg [15:0] i2s_rx_data_lch_out,
-    output reg [15:0] i2s_rx_data_rch_out,
+    output reg signed[15:0] i2s_rx_data_lch_out,
+    output reg signed[15:0] i2s_rx_data_rch_out,
     output i2s_rx_data_valid,
-    input [15:0] i2s_tx_data_lch_in,
-    input [15:0] i2s_tx_data_rch_in,
+    input signed[15:0] i2s_tx_data_lch_in,
+    input signed[15:0] i2s_tx_data_rch_in,
     input i2s_tx_data_valid
 );
 reg [31:0] i2s_rx_shift_reg;//LR packed 16 bits each
@@ -28,7 +28,6 @@ assign i2s_rx_data_valid = (bit_clk_edge_detector == 2'b10) && (ws_edge_detector
 always @(posedge clock) begin
     if(!reset_n) begin
         i2s_rx_shift_reg <= 0;
-        i2s_rx_data_valid <= 0;
         i2s_tx_shift_reg[0] <= 0;
         i2s_tx_shift_reg[1] <= 0;
         i2s_tx_buffer_select <= 0;

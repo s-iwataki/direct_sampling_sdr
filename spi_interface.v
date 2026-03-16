@@ -24,6 +24,9 @@ always @(posedge clock) begin
         if(spi_cs_n) begin
             bit_count <= 0;
             spi_data_en <= 0;
+        end  else if(spi_data_en) begin
+            spi_data_en <= 0;
+            bit_count <= 0;
         end else begin
             sck_edge_detector <= {sck_edge_detector[0], spi_sck};
             if (sck_edge_detector == 2'b01) begin
@@ -35,10 +38,7 @@ always @(posedge clock) begin
                 end
             end 
         end
-        if(spi_data_en) begin
-            spi_data_en <= 0;
-            bit_count <= 0;
-        end
+
     end
 end
 
