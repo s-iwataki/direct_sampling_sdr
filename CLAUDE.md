@@ -34,7 +34,7 @@ quartus_sta direct_sampling_sdr
 ### Signal Flow (Receiver Path)
 
 ```
-wav_in[14-bit] → NCO Mixer → I/Q[14-bit] → CIC(÷256) → FIR(÷10) → wav_out[16-bit]
+wav_in[14-bit] → NCO Mixer → I/Q[14-bit] → CIC(÷256) → FIR(÷10) → i2s
                      ↑
               frequency[27-bit]
 ```
