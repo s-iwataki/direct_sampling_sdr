@@ -35,9 +35,6 @@ module cic_interpolator(clock, in_sample,in_signal,out_signal);
 		if(in_sample) begin
 			delay_stg_1st<=in_signal;
 			differential_stg_1st<=in_signal-delay_stg_1st;
-			/*delay_stg_2nd<=differential_stg_1st;
-			delay_stg_3rd<=differential_stg_2nd;
-			delay_stg_4th<=differential_stg_3rd;*/
 		end
 		if(timing_1st_stg) begin
 			delay_stg_2nd<=differential_stg_1st;
