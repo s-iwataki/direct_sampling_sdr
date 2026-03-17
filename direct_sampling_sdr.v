@@ -14,9 +14,10 @@ module direct_sampling_sdr(clock,reset_n,wav_in, wav_out,i2s_ws_out,i2s_clk_out,
 	//RX path wires
 	wire signed[27:0]input_mul_sin;
 	wire signed[27:0]input_mul_cos;
-	wire signed[13:0]i_downconverted,q_downconverted;
+	reg signed[13:0]i_downconverted,q_downconverted;
 	wire signed[45:0]i_decimated,q_decimated;
 	wire signed[15:0]i_decimated_2560,q_decimated_2560;
+	wire i_cic_decimated_sample_available,q_cic_decimated_sample_available;
 	//TX path wires
 	wire signed [15:0]tx_i_signal,tx_q_signal;
 	wire signed [15:0]tx_i_fir_interpolated,tx_q_fir_interpolated;
@@ -50,13 +51,12 @@ module direct_sampling_sdr(clock,reset_n,wav_in, wav_out,i2s_ws_out,i2s_clk_out,
 	nco #(27,14) nco_inst(clock,frequency,nco_sinout,nco_cosout);
 	assign input_mul_sin = wav_in*nco_sinout;
 	assign input_mul_cos = wav_in*nco_cosout;
-	assign i_downconverted = input_mul_sin>>13;
-	assign q_downconverted = input_mul_cos>>13;
+
 	
 	timing_generator tg(clock,reset_n,timing_16clk,timing_256clk,timing_2560clk);
 	
-	cic_decimator cic_downconv_i(clock,timing_256clk,i_downconverted,i_decimated);
-	cic_decimator cic_downconv_q(clock,timing_256clk,q_downconverted,q_decimated);
+	cic_decimator cic_downconv_i(clock,timing_256clk,i_downconverted,i_decimated,i_decimated_sample_available);
+	cic_decimator cic_downconv_q(clock,timing_256clk,q_downconverted,q_decimated,q_cic_decimated_sample_available);
 	
 	fir_decimator fir_d_i(clock,reset_n,i_decimated[45:30],i_decimated_2560,timing_256clk,timing_2560clk,rx_fir_i_data_we,coeff_in,coeff_w_addr);
 	fir_decimator fir_d_q(clock,reset_n,q_decimated[45:30],q_decimated_2560,timing_256clk,timing_2560clk,rx_fir_q_data_we,coeff_in,coeff_w_addr);
@@ -76,6 +76,8 @@ module direct_sampling_sdr(clock,reset_n,wav_in, wav_out,i2s_ws_out,i2s_clk_out,
 	assign tx_mul_sin = tx_i_cic_interpolated[45:32]*nco_sinout;
 	assign tx_mul_cos = tx_q_cic_interpolated[45:32]*nco_cosout;
 	always @(posedge clock) begin
+		i_downconverted <= input_mul_sin>>13;
+		q_downconverted <= input_mul_cos>>13;
 		wav_out<=(tx_mul_sin+tx_mul_cos)>>13;
 	end
 
