@@ -10,11 +10,13 @@ module fir_interpolator(clock,reset_n,signal_in,signal_out,fir_update_clk,input_
 	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs [0:NMAX_TAPS-1];
 	reg signed [SIGNAL_BITWIDTH-1:0] signal_mem_out;
 	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs_out;
+	reg signed [SIGNAL_BITWIDTH-1:0] signal_mem_out_2nd;
+	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs_out_2nd;
 	reg [7:0] tap_address_counter;
 	reg [7:0] sigmem_addr_counter;
 	reg [7:0] sigmem_read_addr;
 	reg [7:0] coeff_read_addr;
-	reg fir_update_en_adress_stg,fir_update_en_memout_stg,fir_update_en_mult_stg;
+	reg fir_update_en_adress_stg,fir_update_en_memout_stg,fir_update_en_memout_stg_2nd,fir_update_en_mult_stg;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] fir_accumlator;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] mult_result;
 	reg signed [SIGNAL_BITWIDTH-1:0] fir_output;
@@ -37,10 +39,13 @@ module fir_interpolator(clock,reset_n,signal_in,signal_out,fir_update_clk,input_
 			coeff_read_addr<=tap_address_counter;
 			signal_mem_out<=signal_mem[sigmem_read_addr];
 			tap_coeffs_out<=tap_coeffs[coeff_read_addr];
+			signal_mem_out_2nd<=signal_mem_out;
+			tap_coeffs_out_2nd<=tap_coeffs_out;
 			mult_result<=signal_mem_out*tap_coeffs_out;
 			fir_update_en_adress_stg<=fir_update_clk;
 			fir_update_en_memout_stg<=fir_update_en_adress_stg;
-			fir_update_en_mult_stg<=fir_update_en_memout_stg;
+			fir_update_en_memout_stg_2nd<=fir_update_en_memout_stg;
+			fir_update_en_mult_stg<=fir_update_en_memout_stg_2nd;
 			if(fir_update_clk) begin
 				sigmem_addr_counter<=sigmem_addr_counter+1;
 				signal_mem[sigmem_addr_counter]<=fir_in;

@@ -21,6 +21,11 @@ module nco(clock, frequency, wave_output_sin, wave_output_cos);
 	reg signed [OUTPUT_BIT_WIDTH-1:0] cos_table_high_tmp;
 	reg signed [OUTPUT_BIT_WIDTH-1:0] sin_table_low_tmp;
 	reg signed [OUTPUT_BIT_WIDTH-1:0] cos_table_low_tmp;
+
+	reg signed [OUTPUT_BIT_WIDTH-1:0] sin_table_high_tmp_tmp;
+	reg signed [OUTPUT_BIT_WIDTH-1:0] cos_table_high_tmp_tmp;
+	reg signed [OUTPUT_BIT_WIDTH-1:0] sin_table_low_tmp_tmp;
+	reg signed [OUTPUT_BIT_WIDTH-1:0] cos_table_low_tmp_tmp;
 	
 	reg signed [OUTPUT_BIT_WIDTH*2-1:0]chcl_tmp,shsl_tmp,shcl_tmp,chsl_tmp;
 	
@@ -29,10 +34,14 @@ module nco(clock, frequency, wave_output_sin, wave_output_cos);
 	
 	always @ (posedge clock) begin
 		phase_acc <= phase_acc+frequency;
-		sin_table_high_tmp<=sin_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
-		cos_table_high_tmp<=cos_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
-		sin_table_low_tmp<=sin_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
-		cos_table_low_tmp<=cos_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
+		sin_table_high_tmp_tmp<=sin_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
+		cos_table_high_tmp_tmp<=cos_table_high[phase_acc[FREQUENCY_BIT_WIDTH-1:FREQUENCY_BIT_WIDTH-8]];
+		sin_table_low_tmp_tmp<=sin_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
+		cos_table_low_tmp_tmp<=cos_table_low[phase_acc[FREQUENCY_BIT_WIDTH-9:FREQUENCY_BIT_WIDTH-16]];
+		sin_table_high_tmp<=sin_table_high_tmp_tmp;//クロック周波数の要件を満たすためにレジスタを噛ませる
+		cos_table_high_tmp<=cos_table_high_tmp_tmp;
+		sin_table_low_tmp<=sin_table_low_tmp_tmp;
+		cos_table_low_tmp<=cos_table_low_tmp_tmp;
 		chcl_tmp<=cos_table_high_tmp*cos_table_low_tmp;
 		shsl_tmp<=sin_table_high_tmp*sin_table_low_tmp;
 		shcl_tmp<=sin_table_high_tmp*cos_table_low_tmp;
