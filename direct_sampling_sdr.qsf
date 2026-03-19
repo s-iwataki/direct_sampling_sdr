@@ -88,4 +88,80 @@ set_global_assignment -name VERILOG_FILE cic_decimator_with_input_sample.v
 set_global_assignment -name VERILOG_FILE timing_generator.v
 set_global_assignment -name SDC_FILE direct_sampling_sdr.sdc
 set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to clock
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to i2s_clk_out
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to i2s_datain
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to i2s_dataout
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to i2s_ws_out
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to reset_n
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to spi_clk
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to spi_cs_n
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to spi_datain
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[13]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[12]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[11]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[10]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[9]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[8]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wav_in
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to wav_out
+set_location_assignment PIN_32 -to wav_in[13]
+set_location_assignment PIN_33 -to wav_in[12]
+set_location_assignment PIN_34 -to wav_in[11]
+set_location_assignment PIN_38 -to wav_in[10]
+set_location_assignment PIN_39 -to wav_in[9]
+set_location_assignment PIN_42 -to wav_in[8]
+set_location_assignment PIN_43 -to wav_in[7]
+set_location_assignment PIN_44 -to wav_in[6]
+set_location_assignment PIN_46 -to wav_in[5]
+set_location_assignment PIN_49 -to wav_in[4]
+set_location_assignment PIN_50 -to wav_in[3]
+set_location_assignment PIN_51 -to wav_in[2]
+set_location_assignment PIN_52 -to wav_in[1]
+set_location_assignment PIN_53 -to wav_in[0]
+set_location_assignment PIN_54 -to wav_out[13]
+set_location_assignment PIN_55 -to wav_out[12]
+set_location_assignment PIN_58 -to wav_out[11]
+set_location_assignment PIN_59 -to wav_out[10]
+set_location_assignment PIN_60 -to wav_out[9]
+set_location_assignment PIN_65 -to wav_out[8]
+set_location_assignment PIN_66 -to wav_out[7]
+set_location_assignment PIN_67 -to wav_out[6]
+set_location_assignment PIN_68 -to wav_out[5]
+set_location_assignment PIN_69 -to wav_out[4]
+set_location_assignment PIN_70 -to wav_out[3]
+set_location_assignment PIN_71 -to wav_out[2]
+set_location_assignment PIN_72 -to wav_out[1]
+set_location_assignment PIN_73 -to wav_out[0]
+set_location_assignment PIN_22 -to clock
+set_location_assignment PIN_144 -to i2s_clk_out
+set_location_assignment PIN_143 -to i2s_datain
+set_location_assignment PIN_142 -to i2s_dataout
+set_location_assignment PIN_141 -to i2s_ws_out
+set_location_assignment PIN_138 -to reset_n
+set_location_assignment PIN_137 -to spi_clk
+set_location_assignment PIN_135 -to spi_cs_n
+set_location_assignment PIN_133 -to spi_datain
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
