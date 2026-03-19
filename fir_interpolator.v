@@ -41,7 +41,7 @@ module fir_interpolator(clock,reset_n,signal_in,signal_out,fir_update_clk,input_
 			tap_coeffs_out<=tap_coeffs[coeff_read_addr];
 			signal_mem_out_2nd<=signal_mem_out;
 			tap_coeffs_out_2nd<=tap_coeffs_out;
-			mult_result<=signal_mem_out*tap_coeffs_out;
+			mult_result<=signal_mem_out_2nd*tap_coeffs_out_2nd;
 			fir_update_en_adress_stg<=fir_update_clk;
 			fir_update_en_memout_stg<=fir_update_en_adress_stg;
 			fir_update_en_memout_stg_2nd<=fir_update_en_memout_stg;

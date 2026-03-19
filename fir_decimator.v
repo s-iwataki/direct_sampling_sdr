@@ -10,11 +10,13 @@ module fir_decimator(clock,reset_n,signal_in,signal_out,input_sample_clk,decimat
 	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs [0:NMAX_TAPS-1];
 	reg signed [SIGNAL_BITWIDTH-1:0] signal_mem_out;
 	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs_out;
+	reg signed [SIGNAL_BITWIDTH-1:0] signal_mem_out_2nd;
+	reg signed [SIGNAL_BITWIDTH-1:0] tap_coeffs_out_2nd;
 	reg [7:0] tap_address_counter;
 	reg [7:0] sigmem_addr_counter;
 	reg [7:0] sigmem_read_addr;
 	reg [7:0] coeff_read_addr;
-	reg input_sample_en_adress_stg,input_sample_en_memout_stg,input_sample_en_mult_stg;
+	reg input_sample_en_adress_stg,input_sample_en_memout_stg,input_sample_en_memout_stg_2nd,input_sample_en_mult_stg;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] fir_accumlator;
 	reg signed [2*SIGNAL_BITWIDTH-1:0] mult_result;
 	reg signed [SIGNAL_BITWIDTH-1:0] output_sampler;
@@ -38,10 +40,13 @@ module fir_decimator(clock,reset_n,signal_in,signal_out,input_sample_clk,decimat
 			coeff_read_addr<=tap_address_counter;
 			signal_mem_out<=signal_mem[sigmem_read_addr];
 			tap_coeffs_out<=tap_coeffs[coeff_read_addr];
-			mult_result<=signal_mem_out*tap_coeffs_out;
+			signal_mem_out_2nd<=signal_mem_out;
+			tap_coeffs_out_2nd<=tap_coeffs_out;
+			mult_result<=signal_mem_out_2nd*tap_coeffs_out_2nd;
 			input_sample_en_adress_stg<=input_sample_clk;
 			input_sample_en_memout_stg<=input_sample_en_adress_stg;
-			input_sample_en_mult_stg<=input_sample_en_memout_stg;
+			input_sample_en_memout_stg_2nd<=input_sample_en_memout_stg;
+			input_sample_en_mult_stg<=input_sample_en_memout_stg_2nd;
 			if(input_sample_clk) begin
 				sigmem_addr_counter<=sigmem_addr_counter+1;
 				signal_mem[sigmem_addr_counter]<=signal_in;
