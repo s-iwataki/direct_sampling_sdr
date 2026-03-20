@@ -24,8 +24,8 @@ module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2
 	wire signed [15:0]tx_i_signal,tx_q_signal;
 	wire signed [15:0]tx_i_fir_interpolated,tx_q_fir_interpolated;
 	wire signed [45:0]tx_i_cic_interpolated,tx_q_cic_interpolated;
-	wire signed[27:0]tx_mul_sin;
-	wire signed[27:0]tx_mul_cos;
+	reg signed[27:0]tx_mul_sin;
+	reg signed[27:0]tx_mul_cos;
 	wire tx_sample_available;
 
 	//RX fir decimator control wires
@@ -83,9 +83,10 @@ module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2
 	cic_interpolator cic_i_i(clock,timing_256clk,tx_i_fir_interpolated,tx_i_cic_interpolated);
 	cic_interpolator cic_i_q(clock,timing_256clk,tx_q_fir_interpolated,tx_q_cic_interpolated);
 
-	assign tx_mul_sin = tx_i_cic_interpolated[45:32]*nco_sinout;
-	assign tx_mul_cos = tx_q_cic_interpolated[45:32]*nco_cosout;
+
 	always @(posedge clock) begin
+		tx_mul_sin <= tx_i_cic_interpolated[45:32]*nco_sinout;
+		tx_mul_cos <= tx_q_cic_interpolated[45:32]*nco_cosout;
 		i_downconverted <= input_mul_sin>>13;
 		q_downconverted <= input_mul_cos>>13;
 		wav_out<=(tx_mul_sin+tx_mul_cos)>>13;
