@@ -1,6 +1,7 @@
-module direct_sampling_sdr(clock,reset_n,wav_in, wav_out,i2s_ws_out,i2s_clk_out,i2s_dataout,i2s_datain,spi_cs_n,spi_clk,spi_datain);
+module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2s_clk_out,i2s_dataout,i2s_datain,spi_cs_n,spi_clk,spi_datain);
 	input clock;
 	input reset_n;
+	input adc_clock;
 	input signed[13:0]wav_in;
 	output reg signed [13:0] wav_out;
 	input spi_clk,spi_cs_n,spi_datain,i2s_datain;
@@ -12,6 +13,7 @@ module direct_sampling_sdr(clock,reset_n,wav_in, wav_out,i2s_ws_out,i2s_clk_out,
 	wire signed[13:0]nco_sinout;
 	wire signed[13:0]nco_cosout;
 	//RX path wires
+	wire signed[13:0]wav_in_sync;
 	wire signed[27:0]input_mul_sin;
 	wire signed[27:0]input_mul_cos;
 	reg signed[13:0]i_downconverted,q_downconverted;
@@ -47,15 +49,23 @@ module direct_sampling_sdr(clock,reset_n,wav_in, wav_out,i2s_ws_out,i2s_clk_out,
 	//spi interface wires
 	wire spi_data_en;
 	wire [7:0]spi_data_out;
+
+	adc_synchornizer adc_sync (
+		.sysclock(clock),
+		.adc_clock(adc_clock),
+		.reset_n(reset_n),
+		.adc_data_in(wav_in),
+		.adc_data_out(wav_in_sync)
+	);
 	
 	nco #(27,14) nco_inst(clock,frequency,nco_sinout,nco_cosout);
-	assign input_mul_sin = wav_in*nco_sinout;
-	assign input_mul_cos = wav_in*nco_cosout;
+	assign input_mul_sin = wav_in_sync*nco_sinout;
+	assign input_mul_cos = wav_in_sync*nco_cosout;
 
 	
 	timing_generator tg(clock,reset_n,timing_16clk,timing_256clk,timing_2560clk);
 	
-	cic_decimator cic_downconv_i(clock,timing_256clk,i_downconverted,i_decimated,i_decimated_sample_available);
+	cic_decimator cic_downconv_i(clock,timing_256clk,i_downconverted,i_decimated,i_cic_decimated_sample_available);
 	cic_decimator cic_downconv_q(clock,timing_256clk,q_downconverted,q_decimated,q_cic_decimated_sample_available);
 	
 	fir_decimator fir_d_i(clock,reset_n,i_decimated[45:30],i_decimated_2560,timing_256clk,timing_2560clk,rx_fir_i_data_we,coeff_in,coeff_w_addr);
