@@ -173,7 +173,9 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 set_global_assignment -name DEVICE_MIGRATION_LIST "10CL010YE144I7G,10CL006YE144I7G"
 set_global_assignment -name CYCLONEIII_CONFIGURATION_DEVICE EPCQ4A
 set_global_assignment -name CONFIGURATION_VCCIO_LEVEL 3.3V
-set_location_assignment PIN_98 -to testmode_enable
+set_location_assignment PIN_103 -to testmode_enable
 set_location_assignment PIN_99 -to testmode[0]
 set_location_assignment PIN_100 -to testmode[1]
+set_global_assignment -name ENABLE_INIT_DONE_OUTPUT ON
+set_global_assignment -name ENABLE_DEVICE_WIDE_RESET ON
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
