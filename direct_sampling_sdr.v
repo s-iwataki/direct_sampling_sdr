@@ -1,4 +1,9 @@
-module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2s_clk_out,i2s_dataout,i2s_datain,spi_cs_n,spi_clk,spi_datain);
+`define TEST_ADC_TO_DAC 0
+`define TEST_NCO_TO_DAC 1
+`define TEST_NCO_25MHz_TO_DAC 2
+`define NCO_TEST_TUNING_WORD_25MHz 27'd27306667 // Tuning word for 25MHz output with 27-bit NCO and 122.88MHz clock
+
+module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2s_clk_out,i2s_dataout,i2s_datain,spi_cs_n,spi_clk,spi_datain,testmode_enable,testmode);
 	input clock;
 	input reset_n;
 	input adc_clock;
@@ -6,8 +11,10 @@ module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2
 	output reg signed [13:0] wav_out;
 	input spi_clk,spi_cs_n,spi_datain,i2s_datain;
 	output i2s_ws_out,i2s_clk_out,i2s_dataout;
+	input testmode_enable;
+	input [1:0]testmode;//00: loopback ADC input to DAC, 01: connect NCO output to DAC for testing, 10: connect 25MHz NCO output to DAC for testing, 11: i2s loopback test
 
-
+	wire [26:0]frequency_ctrl_reg;
 	//NCO wires
 	wire [26:0]frequency;
 	wire signed[13:0]nco_sinout;
@@ -57,6 +64,8 @@ module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2
 		.adc_data_in(wav_in),
 		.adc_data_out(wav_in_sync)
 	);
+
+	assign frequency = (testmode_enable&&(testmode == `TEST_NCO_25MHz_TO_DAC)) ? `NCO_TEST_TUNING_WORD_25MHz : frequency_ctrl_reg;
 	
 	nco #(27,14) nco_inst(clock,frequency,nco_sinout,nco_cosout);
 	assign input_mul_sin = wav_in_sync*nco_sinout;
@@ -75,7 +84,7 @@ module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2
 	i2s_interface i2s_if(clock,reset_n,i2s_clk,i2s_ws,i2s_datain,i2s_dataout,tx_i_signal,tx_q_signal,tx_sample_available,i_decimated_2560,q_decimated_2560,timing_2560clk);
 
 	spi_interface spi_if(clock,reset_n,spi_clk,spi_datain,spi_cs_n,spi_data_out,spi_data_en);
-	control_registers ctrl_reg(clock,reset_n,spi_cs_n,spi_data_out,spi_data_en,coeff_in,coeff_w_addr,tx_fir_i_data_we,tx_fir_q_data_we,rx_fir_i_data_we,rx_fir_q_data_we,rx_gain,rx_reset_n,tx_reset_n,frequency);
+	control_registers ctrl_reg(clock,reset_n,spi_cs_n,spi_data_out,spi_data_en,coeff_in,coeff_w_addr,tx_fir_i_data_we,tx_fir_q_data_we,rx_fir_i_data_we,rx_fir_q_data_we,rx_gain,rx_reset_n,tx_reset_n,frequency_ctrl_reg);
 
 	fir_interpolator fir_i_i(clock,reset_n,tx_i_signal,tx_i_fir_interpolated,timing_256clk,tx_sample_available,tx_fir_i_data_we,coeff_in,coeff_w_addr);
 	fir_interpolator fir_i_q(clock,reset_n,tx_q_signal,tx_q_fir_interpolated,timing_256clk,tx_sample_available,tx_fir_q_data_we,coeff_in,coeff_w_addr);
@@ -89,7 +98,13 @@ module direct_sampling_sdr(clock,reset_n,adc_clock,wav_in, wav_out,i2s_ws_out,i2
 		tx_mul_cos <= tx_q_cic_interpolated[45:32]*nco_cosout;
 		i_downconverted <= input_mul_sin>>13;
 		q_downconverted <= input_mul_cos>>13;
-		wav_out<=(tx_mul_sin+tx_mul_cos)>>13;
+		if(testmode_enable&&testmode==`TEST_ADC_TO_DAC) begin
+			wav_out<=wav_in_sync;
+		end else if(testmode_enable&&((testmode==`TEST_NCO_TO_DAC)||(testmode==`TEST_NCO_25MHz_TO_DAC))) begin
+			wav_out<=nco_sinout;
+		end else begin
+			wav_out<=(tx_mul_sin+tx_mul_cos)>>13;
+		end
 	end
 
 endmodule
